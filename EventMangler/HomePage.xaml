@@ -10,7 +10,7 @@
         <ImageBrush ImageSource="img\bg.png" Stretch="Fill"/>
     </Page.Background>
 
-    <Border BorderBrush="White" BorderThickness="5" CornerRadius="10">
+    <Border BorderBrush="White" BorderThickness="5" CornerRadius="10">        
         <ScrollViewer HorizontalScrollBarVisibility="Visible">
             <StackPanel Name="ImageListStack" Orientation="Vertical" Height="AUTO" Margin="10">
             </StackPanel>

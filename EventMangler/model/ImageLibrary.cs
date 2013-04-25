@@ -70,7 +70,7 @@ namespace EventMangler.model
             System.Console.WriteLine(newImage.toXElement().ToString());
             string xmlString = File.ReadAllText(eventFilePath);               
             // lol
-            File.WriteAllText(eventFilePath, xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf("name=\"" + imageList + "\">")), "\t" + newImage.toXElement().ToString() + "\n"));
+            File.WriteAllText(eventFilePath, xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf(String.Format("name=\"%s\">", imageList))), String.Format("\t%s\n", image.toXElement().ToString())));
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace EventMangler.model
             // Remove XElement for FTLImage from corresponding imagelist in events_imagelist            
             string xmlString = File.ReadAllText(eventFilePath);
             // lol
-            File.WriteAllText(eventFilePath, xmlString.Remove(xmlString.IndexOf("\t" + image.toXElement().ToString(), xmlString.IndexOf("name=\"" + imageList + "\">")), ("\t" + image.toXElement().ToString() + "\n").Length));
+            File.WriteAllText(eventFilePath, xmlString.Remove(xmlString.IndexOf("\t" + image.toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"%s\">", imageList))), (String.Format("\t%s\n", image.toXElement().ToString())).Length));
         }
 
         protected Dictionary<string, List<FTLImage>> getImageLists(string eventFilePath)
@@ -94,7 +94,7 @@ namespace EventMangler.model
             // Display the passed filepath
             System.Console.WriteLine("Loading imageLists from " + eventFilePath);
             string xmlString = File.ReadAllText(eventFilePath);
-            XDocument events_imageList = XDocument.Parse("<imageLists>" + xmlString + "</imageLists>");
+            XDocument events_imageList = XDocument.Parse(String.Format("<imageLists>%s</imageLists>", xmlString));
 
             Dictionary<string, List<FTLImage>> imageLists = new Dictionary<string, List<FTLImage>>();
             var imageListQuery =
