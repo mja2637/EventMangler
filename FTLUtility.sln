@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventMangler", "EventMangler\EventMangler.csproj", "{32436B95-25E2-4388-AD7D-C9B9D2882330}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleQueries", "..\LINQ - Sample Querie1\SampleQueries.csproj", "{77EC7459-0B99-4142-AFC0-95E75A2DED78}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32436B95-25E2-4388-AD7D-C9B9D2882330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32436B95-25E2-4388-AD7D-C9B9D2882330}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32436B95-25E2-4388-AD7D-C9B9D2882330}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{32436B95-25E2-4388-AD7D-C9B9D2882330}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{32436B95-25E2-4388-AD7D-C9B9D2882330}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{32436B95-25E2-4388-AD7D-C9B9D2882330}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32436B95-25E2-4388-AD7D-C9B9D2882330}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32436B95-25E2-4388-AD7D-C9B9D2882330}.Release|ARM.ActiveCfg = Release|Any CPU
+		{32436B95-25E2-4388-AD7D-C9B9D2882330}.Release|x64.ActiveCfg = Release|Any CPU
+		{32436B95-25E2-4388-AD7D-C9B9D2882330}.Release|x86.ActiveCfg = Release|Any CPU
+		{77EC7459-0B99-4142-AFC0-95E75A2DED78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77EC7459-0B99-4142-AFC0-95E75A2DED78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77EC7459-0B99-4142-AFC0-95E75A2DED78}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{77EC7459-0B99-4142-AFC0-95E75A2DED78}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{77EC7459-0B99-4142-AFC0-95E75A2DED78}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{77EC7459-0B99-4142-AFC0-95E75A2DED78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77EC7459-0B99-4142-AFC0-95E75A2DED78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77EC7459-0B99-4142-AFC0-95E75A2DED78}.Release|ARM.ActiveCfg = Release|Any CPU
+		{77EC7459-0B99-4142-AFC0-95E75A2DED78}.Release|x64.ActiveCfg = Release|Any CPU
+		{77EC7459-0B99-4142-AFC0-95E75A2DED78}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
