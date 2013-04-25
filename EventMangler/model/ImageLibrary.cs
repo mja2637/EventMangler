@@ -86,8 +86,33 @@ namespace EventMangler.model
 
             // Remove XElement for FTLImage from corresponding imagelist in events_imagelist            
             string xmlString = File.ReadAllText(eventFilePath);
+            xmlString = xmlString.Remove(xmlString.IndexOf("\t" + image.toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", imageList))), (String.Format("\t{0}\n", image.toXElement().ToString())).Length);
             // lol
-            File.WriteAllText(eventFilePath, xmlString.Remove(xmlString.IndexOf("\t" + image.toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", imageList))), (String.Format("\t{0}\n", image.toXElement().ToString())).Length));
+            File.WriteAllText(eventFilePath, xmlString);
+
+            removeUnusedImages();
+        }
+
+        public void removeUnusedImages()
+        {
+            // Query our imageLists dictionary for all unique image paths
+            HashSet<string> uniqueImageFiles;
+            var uniqueImages =
+                from imagelist in imageLists.Values
+                from image in imagelist
+                select image.path;
+            uniqueImageFiles = new HashSet<string>(uniqueImages.Distinct<string>());
+
+            // Iterate over image files in /stars, removing all unused            
+            string imageFilePath = Path.Combine(Properties.Resources.mod_root_dir, "img/stars");
+            foreach (string imageFile in Directory.EnumerateFiles(imageFilePath))
+            {
+                if (!uniqueImageFiles.Contains<string>(String.Format("stars/{0}", Path.GetFileName(imageFile))))
+                {
+                    Console.WriteLine(String.Format("Removing unused image file {0}", imageFile));
+                    File.Delete(Path.Combine(imageFilePath, imageFile));
+                }
+            }
         }
 
         protected Dictionary<string, List<FTLImage>> getImageLists(string eventFilePath)
