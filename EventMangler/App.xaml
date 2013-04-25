@@ -1,0 +1,15 @@
+﻿<Application x:Class="EventMangler.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <Style x:Key="imageBorderStyle">
+            <Setter Property="Border.BorderBrush" Value="White" />
+            <Setter Property="Border.BorderThickness" Value="1" />
+            <Setter Property="Border.Margin" Value="10" />
+            <Setter Property="Border.CornerRadius" Value="10" />
+            <Setter Property="Border.Background" Value="White" />
+        </Style>
+         
+    </Application.Resources>
+</Application>
