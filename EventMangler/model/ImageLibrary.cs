@@ -32,7 +32,7 @@ namespace EventMangler.model
                 // Move image at imageFilePath to mod image directory
                 string filename = Path.GetFileName(imageFilePath);
                 string destFolder = Path.Combine(Properties.Resources.mod_root_dir, "img/stars/");
-                File.Copy(imageFilePath, Path.Combine(destFolder, filename), false);
+                if (!File.Exists(Path.Combine(destFolder, filename))) File.Copy(imageFilePath, Path.Combine(destFolder, filename));
                 
                 // Get source for deriving image dimensions
                 BitmapImage src = new BitmapImage();
@@ -44,12 +44,11 @@ namespace EventMangler.model
                 FTLImage newImage = new FTLImage(Path.Combine("stars/", filename), (int) src.Width, (int) src.Height);
                 imageLists[imageList].Add(newImage);
 
-                // Add XML element to events_imagelist
+                // Add XElement for FTLImage to end of corresponding imagelist in events_imagelist
                 System.Console.WriteLine(newImage.toXElement().ToString());
                 string xmlString = File.ReadAllText(eventFilePath);               
                 // lol
-                xmlString = xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf("name=\"" + imageList + "\">\n")), newImage.toXElement().ToString());
-                File.WriteAllText(eventFilePath, xmlString);
+                File.WriteAllText(eventFilePath, xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf("name=\"" + imageList + "\">")), newImage.toXElement().ToString() + "\n"));
                 return newImage;
             } else throw new FileNotFoundException();            
         }

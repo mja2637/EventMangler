@@ -39,6 +39,7 @@ namespace EventMangler
 
                 // Create horizontal stack panel to place images in
                 StackPanel listPanel = new StackPanel();
+                listPanel.Name = imageList.Key;
                 listPanel.Background = new SolidColorBrush(Colors.Transparent);
                 listPanel.Orientation = Orientation.Horizontal;
                 listPanel.Height = 108;
@@ -60,7 +61,7 @@ namespace EventMangler
                                     System.Console.WriteLine("Image dropped: " + filename);
 
                                     // Construct image from path
-                                    FTLImage newImage = imageLib.addImageFromPath(filename);
+                                    FTLImage newImage = imageLib.addImageFromPath(filename, imageList.Key);
 
                                     // Border & style image
                                     Border newImageBorder = getBorderedImage(newImage);
