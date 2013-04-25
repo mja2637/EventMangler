@@ -12,10 +12,12 @@ namespace EventMangler.model
     class ImageLibrary
     {
         private Dictionary<string, List<FTLImage>> imageLists;
+        private string eventFilePath;
 
         public ImageLibrary(string path)
-        {
+        {            
             imageLists = getImageLists(path);
+            eventFilePath = path;
         }
 
         public Dictionary<string, List<FTLImage>> getImageLists()
@@ -44,6 +46,10 @@ namespace EventMangler.model
 
                 // Add XML element to events_imagelist
                 System.Console.WriteLine(newImage.toXElement().ToString());
+                string xmlString = File.ReadAllText(eventFilePath);               
+                // lol
+                xmlString = xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf("name=\"" + imageList + "\">\n")), newImage.toXElement().ToString());
+                File.WriteAllText(eventFilePath, xmlString);
                 return newImage;
             } else throw new FileNotFoundException();            
         }
