@@ -66,6 +66,24 @@ namespace EventMangler
                                     // Border & style image
                                     Border newImageBorder = getBorderedImage(newImage);
 
+                                    // Add click handlers to remove image to border
+                                    Object downOn = null;
+                                    newImageBorder.MouseRightButtonDown += new MouseButtonEventHandler(
+                                    delegate(object mouseEventSender, MouseButtonEventArgs e1)
+                                    {
+                                        downOn = mouseEventSender;
+                                    });
+                                    newImageBorder.MouseRightButtonUp += new MouseButtonEventHandler(
+                                    delegate(object mouseEventSender, MouseButtonEventArgs e1)
+                                    {
+                                        if (downOn == mouseEventSender)
+                                        {
+                                            imageLib.removeFTLImage(newImage, imageList.Key);
+                                            listPanel.Children.Remove(newImageBorder);
+                                        }
+                                        downOn = null;
+                                    });
+
                                     // Add to stack panel
                                     listPanel.Children.Add(newImageBorder);
                                 }
@@ -77,11 +95,34 @@ namespace EventMangler
                 ImageListStack.Children.Add(listPanel);
 
                 // Add listed images to the horizontal stack
-                foreach (FTLImage image in imageList.Value) listPanel.Children.Add(getBorderedImage(image));
+                foreach (FTLImage image in imageList.Value)
+                {
+                    Border border = getBorderedImage(image);
+                    
+                    // Add click handlers to remove image to border
+                    Object downOn = null;
+                    border.MouseRightButtonDown += new MouseButtonEventHandler(
+                    delegate(object sender, MouseButtonEventArgs e)
+                    {
+                        downOn = sender;
+                    });
+                    border.MouseRightButtonUp += new MouseButtonEventHandler(
+                    delegate(object sender, MouseButtonEventArgs e)
+                    {
+                        if (downOn == sender)
+                        {                            
+                            imageLib.removeFTLImage(image, imageList.Key);
+                            listPanel.Children.Remove(border);
+                        }
+                        downOn = null;
+                    });
+
+                    listPanel.Children.Add(border);
+                }
             };
         }
 
-        Border getBorderedImage(FTLImage image)
+        private Border getBorderedImage(FTLImage image)
         {
             // Create image source
             BitmapImage src = new BitmapImage();
@@ -112,7 +153,7 @@ namespace EventMangler
             border.CornerRadius = new CornerRadius(10);
             border.Background = new SolidColorBrush(Colors.Black);
             border.Child = img;
-            //border.Style = Resources["imageBorderStyle"] as Style;
+
             return border;
         }
     }

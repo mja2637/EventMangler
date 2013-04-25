@@ -25,7 +25,14 @@ namespace EventMangler.model
             return imageLists;
         }
 
-        public FTLImage addImageFromPath(string imageFilePath, string imageList = "PLANET_CLOSE")
+        /// <summary>
+        /// Construct an FTLImage using the file at the passed path.
+        /// Add the passed FTLImage to the ImageLibrary, and to the underlying events_imagelist.xml
+        /// </summary>
+        /// <param name="imageFilePath"></param>
+        /// <param name="imageList"></param>
+        /// <returns></returns>
+        public FTLImage addImageFromPath(string imageFilePath, string imageList)
         {
             if (File.Exists(imageFilePath))
             {
@@ -42,15 +49,44 @@ namespace EventMangler.model
 
                 // Create new FTLImage
                 FTLImage newImage = new FTLImage(Path.Combine("stars/", filename), (int) src.Width, (int) src.Height);
-                imageLists[imageList].Add(newImage);
 
-                // Add XElement for FTLImage to end of corresponding imagelist in events_imagelist
-                System.Console.WriteLine(newImage.toXElement().ToString());
-                string xmlString = File.ReadAllText(eventFilePath);               
-                // lol
-                File.WriteAllText(eventFilePath, xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf("name=\"" + imageList + "\">")), newImage.toXElement().ToString() + "\n"));
+                // Add image to library & XML
+                addFTLImage(newImage, imageList);
                 return newImage;
             } else throw new FileNotFoundException();            
+        }
+
+        /// <summary>
+        /// Add the passed FTLImage to the ImageLibrary, and to the underlying events_imagelist.xml
+        /// </summary>
+        /// <param name="newImage"></param>
+        /// <param name="imageList"></param>
+        public void addFTLImage(FTLImage newImage, string imageList)
+        {
+            // Add image to dictionary
+            imageLists[imageList].Add(newImage);
+
+            // Add XElement for FTLImage to end of corresponding imagelist in events_imagelist
+            System.Console.WriteLine(newImage.toXElement().ToString());
+            string xmlString = File.ReadAllText(eventFilePath);               
+            // lol
+            File.WriteAllText(eventFilePath, xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf("name=\"" + imageList + "\">")), "\t" + newImage.toXElement().ToString() + "\n"));
+        }
+
+        /// <summary>
+        /// Remove the passed FTLImage from the ImageLibrary, and from the underlying events_Imagelist.xml
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="imageList"></param>
+        public void removeFTLImage(FTLImage image, string imageList)
+        {
+            // Remove image from dictionary
+            imageLists[imageList].Remove(image);
+
+            // Remove XElement for FTLImage from corresponding imagelist in events_imagelist            
+            string xmlString = File.ReadAllText(eventFilePath);
+            // lol
+            File.WriteAllText(eventFilePath, xmlString.Remove(xmlString.IndexOf("\t" + image.toXElement().ToString(), xmlString.IndexOf("name=\"" + imageList + "\">")), ("\t" + image.toXElement().ToString() + "\n").Length));
         }
 
         protected Dictionary<string, List<FTLImage>> getImageLists(string eventFilePath)
