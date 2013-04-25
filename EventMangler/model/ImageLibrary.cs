@@ -15,7 +15,7 @@ namespace EventMangler.model
         private string eventFilePath;
 
         public ImageLibrary(string path)
-        {            
+        {
             imageLists = getImageLists(path);
             eventFilePath = path;
         }
@@ -40,7 +40,7 @@ namespace EventMangler.model
                 string filename = Path.GetFileName(imageFilePath);
                 string destFolder = Path.Combine(Properties.Resources.mod_root_dir, "img/stars/");
                 if (!File.Exists(Path.Combine(destFolder, filename))) File.Copy(imageFilePath, Path.Combine(destFolder, filename));
-                
+
                 // Get source for deriving image dimensions
                 BitmapImage src = new BitmapImage();
                 src.BeginInit();
@@ -48,12 +48,13 @@ namespace EventMangler.model
                 src.EndInit();
 
                 // Create new FTLImage
-                FTLImage newImage = new FTLImage(Path.Combine("stars/", filename), (int) src.Width, (int) src.Height);
+                FTLImage newImage = new FTLImage(Path.Combine("stars/", filename), (int)src.Width, (int)src.Height);
 
                 // Add image to library & XML
                 addFTLImage(newImage, imageList);
                 return newImage;
-            } else throw new FileNotFoundException();            
+            }
+            else throw new FileNotFoundException();
         }
 
         /// <summary>
@@ -68,9 +69,9 @@ namespace EventMangler.model
 
             // Add XElement for FTLImage to end of corresponding imagelist in events_imagelist
             System.Console.WriteLine(newImage.toXElement().ToString());
-            string xmlString = File.ReadAllText(eventFilePath);               
+            string xmlString = File.ReadAllText(eventFilePath);
             // lol
-            File.WriteAllText(eventFilePath, xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf(String.Format("name=\"%s\">", imageList))), String.Format("\t%s\n", image.toXElement().ToString())));
+            File.WriteAllText(eventFilePath, xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf(String.Format("name=\"{0}\">", imageList))), String.Format("\t{0}\n", newImage.toXElement().ToString())));
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace EventMangler.model
             // Remove XElement for FTLImage from corresponding imagelist in events_imagelist            
             string xmlString = File.ReadAllText(eventFilePath);
             // lol
-            File.WriteAllText(eventFilePath, xmlString.Remove(xmlString.IndexOf("\t" + image.toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"%s\">", imageList))), (String.Format("\t%s\n", image.toXElement().ToString())).Length));
+            File.WriteAllText(eventFilePath, xmlString.Remove(xmlString.IndexOf("\t" + image.toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", imageList))), (String.Format("\t{0}\n", image.toXElement().ToString())).Length));
         }
 
         protected Dictionary<string, List<FTLImage>> getImageLists(string eventFilePath)
@@ -94,7 +95,9 @@ namespace EventMangler.model
             // Display the passed filepath
             System.Console.WriteLine("Loading imageLists from " + eventFilePath);
             string xmlString = File.ReadAllText(eventFilePath);
-            XDocument events_imageList = XDocument.Parse(String.Format("<imageLists>%s</imageLists>", xmlString));
+
+            // We have to artificially add a root node because fuckass
+            XDocument events_imageList = XDocument.Parse(String.Format("<imageLists>{0}</imageLists>", xmlString));
 
             Dictionary<string, List<FTLImage>> imageLists = new Dictionary<string, List<FTLImage>>();
             var imageListQuery =

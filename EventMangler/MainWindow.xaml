@@ -1,6 +1,6 @@
 ﻿<NavigationWindow x:Class="EventMangler.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="EventMangler" Height="650" Width="750" Source="HomePage.xaml">
+        Title="EventMangler" Height="650" Width="750" Source="TextListGallery.xaml">
       
 </NavigationWindow>

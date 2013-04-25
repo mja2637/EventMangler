@@ -10,9 +10,9 @@ using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 
 namespace EventMangler.model
-{
+{    
     class TextList
-    {
+    {        
         /// <summary>
         /// Name of this textList
         /// </summary>
@@ -52,17 +52,17 @@ namespace EventMangler.model
                 string newXml = "";
                 foreach (var x in e.NewItems)
                 {
-                    newXml += String.Format("\t<text>%s</text>\n", x);
+                    newXml += String.Format("\t<text>{0}</text>\n", x);
                 }
                 string xmlString = File.ReadAllText(eventFile);
-                File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"%s\">", this.name))), newXml));
+                File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml));
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 string xmlString = File.ReadAllText(eventFile);
                 foreach (var x in e.OldItems)
                 {
-                    xmlString.Remove(xmlString.IndexOf(String.Format("\t<text>%s</text>\n", x), xmlString.IndexOf(String.Format("name=\"%s\">", this.name))), String.Format("\t<text>%s</text>\n", x).Length);
+                    xmlString.Remove(xmlString.IndexOf(String.Format("\t<text>{0}</text>\n", x), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t<text>{0}</text>\n", x).Length);
                 }                
                 File.WriteAllText(eventFile, xmlString);
             }
@@ -73,15 +73,15 @@ namespace EventMangler.model
                     string xmlString = File.ReadAllText(eventFile);
                     foreach (var x in e.OldItems)
                     {
-                        xmlString.Remove(xmlString.IndexOf(String.Format("\t<text>%s</text>\n", x), xmlString.IndexOf(String.Format("name=\"%s\">", this.name))), String.Format("\t<text>%s</text>\n", x).Length);
+                        xmlString.Remove(xmlString.IndexOf(String.Format("\t<text>{0}</text>\n", x), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t<text>{0}</text>\n", x).Length);
                     }                    
 
                     string newXml = "";
                     foreach (var x in e.NewItems)
                     {
-                        newXml += String.Format("\t<text>%s</text>\n", x);
+                        newXml += String.Format("\t<text>{0}</text>\n", x);
                     }                    
-                    File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"%s\">", this.name))), newXml));
+                    File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml));
                 }
             }
         }

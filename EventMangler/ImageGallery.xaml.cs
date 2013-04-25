@@ -1,18 +1,11 @@
 ﻿using EventMangler.model;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 
 namespace EventMangler
 {
@@ -20,14 +13,14 @@ namespace EventMangler
     /// <summary>
     /// Interaction logic for HomePage.xaml
     /// </summary>
-    public partial class HomePage : Page
+    public partial class ImageGallery : Page
     {
         ImageLibrary imageLib;
 
-        public HomePage()
+        public ImageGallery()
         {
             InitializeComponent();
-            imageLib = new ImageLibrary(EventMangler.Properties.Resources.default_imagelist);
+            this.imageLib = new ImageLibrary(Properties.Resources.default_imagelist);
             foreach (var imageList in imageLib.getImageLists())
             {
                 // Create label with name of imageList
