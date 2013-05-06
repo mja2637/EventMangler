@@ -11,10 +11,10 @@ using System.Xml.Linq;
 
 namespace EventMangler.model
 {
-    class TextList : FTLTextComposite
+    class ImageList : FTLImageComposite
     {        
         /// <summary>
-        /// Name of this textList
+        /// Name of this imageList
         /// </summary>
         private string name;
         public string Name { get { return name; } }
@@ -26,26 +26,23 @@ namespace EventMangler.model
         public string EventFile { get { return eventFile; } }
 
         /// <summary>
-        /// The actual, no-shit texts contained in this textList
+        /// The actual, no-shit images contained in this textList
         /// </summary>
-        private ObservableCollection<FTLText> texts;
-        public ObservableCollection<FTLText> Texts { get { return texts; } }
+        private ObservableCollection<FTLImage> images;
+        public ObservableCollection<FTLImage> Images { get { return images; } }
 
-        public TextList(string eventFile, XElement listXML)
+        public ImageList(string eventFile, XElement listXML)
         {
             // Set fields
             this.eventFile = eventFile;
             this.name = listXML.Attribute("name").Value;
-            this.texts = new ObservableCollection<FTLText>();
+            this.images = new ObservableCollection<FTLImage>();
 
             // Add text strings to texts
-            foreach (XElement text in listXML.Elements("text"))
-            {
-                this.texts.Add(new FTLText(text));
-            }
+            foreach (XElement image in listXML.Elements("img")) this.images.Add(new FTLImage(image));            
 
             // Set collection behavior
-            texts.CollectionChanged += HandleChange;
+            images.CollectionChanged += HandleChange;
         }
 
         private void HandleChange(object sender, NotifyCollectionChangedEventArgs e)
@@ -55,17 +52,17 @@ namespace EventMangler.model
                 string newXml = "";
                 foreach (var x in e.NewItems)
                 {
-                    newXml += ((FTLText) x).toXElement().ToString();
+                    newXml += ((FTLImage)x).toXElement().ToString();
                 }
                 string xmlString = File.ReadAllText(eventFile);
-                File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml));
+                File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml));
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 string xmlString = File.ReadAllText(eventFile);
                 foreach (var x in e.OldItems)
                 {
-                    xmlString.Remove(xmlString.IndexOf(((FTLText) x).toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t<text>{0}</text>\n", x).Length);
+                    xmlString.Remove(xmlString.IndexOf(((FTLImage)x).toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t<text>{0}</text>\n", x).Length);
                 }                
                 File.WriteAllText(eventFile, xmlString);
             }
@@ -76,23 +73,23 @@ namespace EventMangler.model
                     string xmlString = File.ReadAllText(eventFile);
                     foreach (var x in e.OldItems)
                     {
-                        xmlString.Remove(xmlString.IndexOf(((FTLText)x).toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t<text>{0}</text>\n", x).Length);
+                        xmlString.Remove(xmlString.IndexOf(((FTLImage)x).toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t<text>{0}</text>\n", x).Length);
                     }                    
 
                     string newXml = "";
                     foreach (var x in e.NewItems)
                     {
-                        newXml += ((FTLText)x).toXElement().ToString();
+                        newXml += ((FTLImage)x).toXElement().ToString();
                     }                    
-                    File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml));
+                    File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml));
                 }
             }
         }
 
         public XElement toXElement()
         {
-            XElement ret = new XElement("textList", new XAttribute("name", name));
-            foreach (FTLText text in Texts) ret.Add(text.toXElement());
+            XElement ret = new XElement("imageList", new XAttribute("name", name));
+            foreach (FTLImage image in Images) ret.Add(image.toXElement());
             return ret;
         }
     }

@@ -30,11 +30,11 @@ namespace EventMangler.model
             }
         }
 
-        public Library(string path)
+        public Library(string path, string listTag)
         {
             eventFileDirectory = path;
             lists = new Dictionary<string, List<T>>();
-            foreach (string eventFile in Directory.GetFiles(path, "*.xml")) updateLists(eventFile);
+            foreach (string eventFile in Directory.GetFiles(path, "*.xml")) updateLists(eventFile, listTag);
         }
 
 
@@ -79,15 +79,18 @@ namespace EventMangler.model
         /// </summary>
         /// <param name="eventFilePath"></param>
         /// <returns></returns>
-        protected void updateLists(string eventFilePath)
+        protected void updateLists(string eventFilePath, string listTag)
         {
+            // Clear lists
+            lists.Clear();
+
             // Display the passed filepath
-            if (Properties.Resources.debug == "true") Console.WriteLine(String.Format("Scanning {0} for textLists", eventFilePath));
+            if (Properties.Resources.debug == "true") Console.WriteLine(String.Format("Scanning {0} for lists", eventFilePath));
             string xmlString = File.ReadAllText(eventFilePath);
 
             // We have to artificially add a root node because fuckass
             // We have to artificially add a root node
-            xmlString = String.Format("<textLists>{0}</textLists>", xmlString);
+            xmlString = String.Format("<lists>{0}</lists>", xmlString);
             // Also, remove all comments (since some contain invalid characters)
             Regex rComments = new Regex("<!--.*?-->", RegexOptions.Singleline);
             xmlString = rComments.Replace(xmlString, "");
@@ -95,7 +98,7 @@ namespace EventMangler.model
 
             var listQuery =
                 from
-                    tl in eventFileDocument.Descendants("textList")
+                    tl in eventFileDocument.Descendants(listTag)
                 select tl;
 
             List<T> subLists = new List<T>();
@@ -112,7 +115,7 @@ namespace EventMangler.model
 
     class TextListLibrary : Library<TextList>
     {
-        public TextListLibrary(string path) : base(path) { }
+        public TextListLibrary(string path) : base(path, "textList") { }
 
         protected override TextList listFromXML(string eventFilePath, XElement list)
         {

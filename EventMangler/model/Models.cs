@@ -17,6 +17,9 @@ namespace EventMangler.model
         public readonly int w, h;
         public readonly string path;
 
+        public FTLImage(XElement ele) : this(ele.Value, Int32.Parse(ele.Attribute("w").Value), Int32.Parse(ele.Attribute("h").Value))
+        { }
+
         public FTLImage(string path, int w, int h)
         {
             this.path = path;
@@ -37,8 +40,11 @@ namespace EventMangler.model
         public readonly string text;
 
         public FTLText(XElement ele)
-            : this(ele.Value, ele.Attribute("back").Value, ele.Attribute("planet").Value)
-        { }
+            : this(ele.Value, null, null)
+        { 
+            if (ele.Attribute("back") != null) back = ele.Attribute("back").Value;
+            if (ele.Attribute("planet") != null) planet = ele.Attribute("planet").Value;
+        }
 
         public FTLText(string text, string back, string planet)
         {

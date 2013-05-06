@@ -1,5 +1,6 @@
 ﻿using EventMangler.model;
 using System;
+using System.Linq;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,19 +21,19 @@ namespace EventMangler
         public ImageGallery()
         {
             InitializeComponent();
-            this.imageLib = new ImageLibrary(Properties.Resources.default_imagelist);
-            foreach (var imageList in imageLib.ImageLists)
+            this.imageLib = new ImageLibrary(Path.Combine(Properties.Resources.mod_root_dir, "data/"));
+            foreach (var imageList in imageLib.Lists.Values.SelectMany(x => x))
             {
                 // Create label with name of imageList
                 Label imageListLabel = new Label();
-                imageListLabel.Content = imageList.Key;
+                imageListLabel.Content = imageList.EventFile;
 
                 // Add the label to the vertical stack
                 ImageListStack.Children.Add(imageListLabel);
 
                 // Create horizontal stack panel to place images in
                 StackPanel listPanel = new StackPanel();
-                listPanel.Name = imageList.Key;
+                listPanel.Name = imageList.EventFile;
                 listPanel.Background = new SolidColorBrush(Colors.Transparent);
                 listPanel.Orientation = Orientation.Horizontal;
                 listPanel.Height = 108;
@@ -54,7 +55,8 @@ namespace EventMangler
                                     System.Console.WriteLine("Image dropped: " + filename);
 
                                     // Construct image from path
-                                    FTLImage newImage = imageLib.addImageFromPath(filename, imageList.Key);
+                                    FTLImage newImage = imageLib.addImageFromPath(filename, imageList.Name);
+
 
                                     // Border & style image
                                     Border newImageBorder = getBorderedImage(newImage);
@@ -71,7 +73,7 @@ namespace EventMangler
                                     {
                                         if (downOn == mouseEventSender)
                                         {
-                                            imageLib.removeFTLImage(newImage, imageList.Key);
+                                            imageLib.removeFTLImage(newImage, imageList.Name);
                                             listPanel.Children.Remove(newImageBorder);
                                         }
                                         downOn = null;
@@ -88,10 +90,10 @@ namespace EventMangler
                 ImageListStack.Children.Add(listPanel);
 
                 // Add listed images to the horizontal stack
-                foreach (FTLImage image in imageList.Value)
+                foreach (FTLImage image in imageList.Images)
                 {
                     Border border = getBorderedImage(image);
-                    
+
                     // Add click handlers to remove image to border
                     Object downOn = null;
                     border.MouseRightButtonDown += new MouseButtonEventHandler(
@@ -103,8 +105,8 @@ namespace EventMangler
                     delegate(object sender, MouseButtonEventArgs e)
                     {
                         if (downOn == sender)
-                        {                            
-                            imageLib.removeFTLImage(image, imageList.Key);
+                        {
+                            imageLib.removeFTLImage(image, imageList.Name);
                             listPanel.Children.Remove(border);
                         }
                         downOn = null;

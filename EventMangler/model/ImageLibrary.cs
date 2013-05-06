@@ -9,35 +9,14 @@ using System.Xml.Linq;
 
 namespace EventMangler.model
 {
-    class ImageLibrary
+    class ImageLibrary : Library<ImageList>
     {
-        private Dictionary<string, List<FTLImage>> imageLists;
-        public Dictionary<string, List<FTLImage>> ImageLists
-        {
-            get
-            {
-                return imageLists;
-            }
-        }
-
-        private string eventFilePath;
-        public string EventFilePath
-        {
-            get
-            {
-                return eventFilePath;
-            }
-        }
-
-        public ImageLibrary(string path)
-        {
-            imageLists = getImageLists(path);
-            eventFilePath = path;
-        }
+        public ImageLibrary(string path) : base(path, "imageList")
+        { }
 
         /// <summary>
         /// Construct an FTLImage using the file at the passed path.
-        /// Add the passed FTLImage to the ImageLibrary, and to the underlying events_imagelist.xml
+        /// Move the passed image into the mod directory
         /// </summary>
         /// <param name="imageFilePath"></param>
         /// <param name="imageList"></param>
@@ -60,8 +39,6 @@ namespace EventMangler.model
                 // Create new FTLImage
                 FTLImage newImage = new FTLImage(Path.Combine("stars/", filename), (int)src.Width, (int)src.Height);
 
-                // Add image to library & XML
-                addFTLImage(newImage, imageList);
                 return newImage;
             }
             else throw new FileNotFoundException();
@@ -74,14 +51,15 @@ namespace EventMangler.model
         /// <param name="imageList"></param>
         public void addFTLImage(FTLImage newImage, string imageList)
         {
-            // Add image to dictionary
-            imageLists[imageList].Add(newImage);
+            // Identify correct imageList in dictionary            
+            // Add image to list
+            getImageListByName(imageList).Images.Add(newImage);
+        }
 
-            // Add XElement for FTLImage to end of corresponding imagelist in events_imagelist
-            System.Console.WriteLine(newImage.toXElement().ToString());
-            string xmlString = File.ReadAllText(eventFilePath);
-            // lol
-            File.WriteAllText(eventFilePath, xmlString.Insert(xmlString.IndexOf("</imageList>", xmlString.IndexOf(String.Format("name=\"{0}\">", imageList))), String.Format("\t{0}\n", newImage.toXElement().ToString())));
+        private ImageList getImageListByName(string imageListName)
+        {
+            var destList = from list in Lists.Values.SelectMany(x => x) where list.Name == imageListName select list;
+            return (ImageList)destList;
         }
 
         /// <summary>
@@ -92,13 +70,7 @@ namespace EventMangler.model
         public void removeFTLImage(FTLImage image, string imageList)
         {
             // Remove image from dictionary
-            imageLists[imageList].Remove(image);
-
-            // Remove XElement for FTLImage from corresponding imagelist in events_imagelist            
-            string xmlString = File.ReadAllText(eventFilePath);
-            xmlString = xmlString.Remove(xmlString.IndexOf("\t" + image.toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", imageList))), (String.Format("\t{0}\n", image.toXElement().ToString())).Length);
-            // lol
-            File.WriteAllText(eventFilePath, xmlString);
+            getImageListByName(imageList).Images.Remove(image);
 
             removeUnusedImages();
         }
@@ -108,8 +80,8 @@ namespace EventMangler.model
             // Query our imageLists dictionary for all unique image paths
             HashSet<string> uniqueImageFiles;
             var uniqueImages =
-                from imagelist in imageLists.Values
-                from image in imagelist
+                from imagelist in Lists.Values.SelectMany(x => x)
+                from image in imagelist.Images
                 select image.path;
             uniqueImageFiles = new HashSet<string>(uniqueImages.Distinct<string>());
 
@@ -155,6 +127,11 @@ namespace EventMangler.model
             }
             foreach (string list in imageLists.Keys) Console.WriteLine(list);
             return imageLists;
+        }
+
+        protected override ImageList listFromXML(string eventFilePath, XElement list)
+        {
+            return new ImageList(eventFilePath, list);
         }
     }
 }

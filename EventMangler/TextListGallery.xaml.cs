@@ -28,6 +28,7 @@ namespace EventMangler
             {
                 foreach (TextList textList in eventFile)
                 {
+                    Console.WriteLine(String.Format("Populating TextList {0}", textList.Name));
                     Label textListLabel = new Label();
                     textListLabel.Content = String.Format("{0}: {1}", Path.GetFileNameWithoutExtension(textList.EventFile), textList.Name);
                     TextListStack.Children.Add(textListLabel);
