@@ -33,7 +33,7 @@ namespace EventMangler
 
                 // Create horizontal stack panel to place images in
                 StackPanel listPanel = new StackPanel();
-                listPanel.Name = imageList.EventFile;
+                // listPanel.Name = imageList.EventFile;
                 listPanel.Background = new SolidColorBrush(Colors.Transparent);
                 listPanel.Orientation = Orientation.Horizontal;
                 listPanel.Height = 108;
@@ -56,7 +56,6 @@ namespace EventMangler
 
                                     // Construct image from path
                                     FTLImage newImage = imageLib.addImageFromPath(filename, imageList.Name);
-
 
                                     // Border & style image
                                     Border newImageBorder = getBorderedImage(newImage);
@@ -106,8 +105,8 @@ namespace EventMangler
                     {
                         if (downOn == sender)
                         {
-                            imageLib.removeFTLImage(image, imageList.Name);
                             listPanel.Children.Remove(border);
+                            imageLib.removeFTLImage(image, imageList.Name);                            
                         }
                         downOn = null;
                     });

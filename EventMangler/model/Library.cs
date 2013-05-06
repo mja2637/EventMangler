@@ -55,7 +55,7 @@ namespace EventMangler.model
             // Add XElement for new TextList to end of corresponding textList in corresponding event file
             if (Properties.Resources.debug == "true") Console.WriteLine(String.Format("Adding text list element {0}", newList.toXElement().ToString()));
             string xmlString = File.ReadAllText(eventFileDirectory);
-            File.WriteAllText(eventFileDirectory, xmlString += "\n" + newList.toXElement().ToString());
+            File.WriteAllText(eventFileDirectory, String.Format("{0}\n{1}", xmlString, newList.toXElement().ToString()));
         }
 
         /// <summary>
@@ -81,9 +81,6 @@ namespace EventMangler.model
         /// <returns></returns>
         protected void updateLists(string eventFilePath, string listTag)
         {
-            // Clear lists
-            lists.Clear();
-
             // Display the passed filepath
             if (Properties.Resources.debug == "true") Console.WriteLine(String.Format("Scanning {0} for lists", eventFilePath));
             string xmlString = File.ReadAllText(eventFilePath);
@@ -106,8 +103,11 @@ namespace EventMangler.model
             {
                 subLists.Add(listFromXML(eventFilePath, list));
             }
-            if (subLists.Count > 0) Console.WriteLine(String.Format("{0} lists loaded from {1}.", subLists.Count, eventFilePath));
-            lists.Add(eventFilePath, subLists);
+            if (subLists.Count > 0)
+            {
+                Console.WriteLine(String.Format("{0} lists loaded from {1}.", subLists.Count, eventFilePath));
+                lists.Add(eventFilePath, subLists);
+            }            
         }
 
         abstract protected T listFromXML(string eventFilePath, XElement list);

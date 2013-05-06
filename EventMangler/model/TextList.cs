@@ -50,6 +50,7 @@ namespace EventMangler.model
 
         private void HandleChange(object sender, NotifyCollectionChangedEventArgs e)
         {
+            string xmlString = File.ReadAllText(eventFile);
             if (e.Action == NotifyCollectionChangedAction.Add)
             {                
                 string newXml = "";
@@ -57,23 +58,19 @@ namespace EventMangler.model
                 {
                     newXml += ((FTLText) x).toXElement().ToString();
                 }
-                string xmlString = File.ReadAllText(eventFile);
-                File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml));
+                xmlString = xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml);
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                string xmlString = File.ReadAllText(eventFile);
+            {                
                 foreach (var x in e.OldItems)
                 {
                     xmlString.Remove(xmlString.IndexOf(((FTLText) x).toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t<text>{0}</text>\n", x).Length);
                 }                
-                File.WriteAllText(eventFile, xmlString);
             }
             else if (e.Action == NotifyCollectionChangedAction.Replace)
             {
                 foreach (var y in e.OldItems)
                 {
-                    string xmlString = File.ReadAllText(eventFile);
                     foreach (var x in e.OldItems)
                     {
                         xmlString.Remove(xmlString.IndexOf(((FTLText)x).toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t<text>{0}</text>\n", x).Length);
@@ -83,10 +80,11 @@ namespace EventMangler.model
                     foreach (var x in e.NewItems)
                     {
                         newXml += ((FTLText)x).toXElement().ToString();
-                    }                    
-                    File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml));
+                    }
+                    xmlString = xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml);
                 }
             }
+            File.WriteAllText(eventFile, xmlString);
         }
 
         public XElement toXElement()

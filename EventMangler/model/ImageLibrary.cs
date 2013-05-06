@@ -38,7 +38,7 @@ namespace EventMangler.model
 
                 // Create new FTLImage
                 FTLImage newImage = new FTLImage(Path.Combine("stars/", filename), (int)src.Width, (int)src.Height);
-
+                addFTLImage(newImage, imageList);
                 return newImage;
             }
             else throw new FileNotFoundException();
@@ -58,8 +58,12 @@ namespace EventMangler.model
 
         private ImageList getImageListByName(string imageListName)
         {
-            var destList = from list in Lists.Values.SelectMany(x => x) where list.Name == imageListName select list;
-            return (ImageList)destList;
+            foreach (List<ImageList> imageLists in Lists.Values)
+            {
+                IEnumerable<ImageList> destList = from ImageList list in imageLists where list.Name == imageListName select list;
+                if (destList.Count() > 0) return destList.First();
+            }
+            throw new ArgumentException("Nonexistant imageList requested");
         }
 
         /// <summary>
@@ -87,13 +91,20 @@ namespace EventMangler.model
 
             // Iterate over image files in /stars, removing all unused            
             string imageFilePath = Path.Combine(Properties.Resources.mod_root_dir, "img/stars");
-            foreach (string imageFile in Directory.EnumerateFiles(imageFilePath))
+            foreach (string imageFile in Directory.GetFiles(imageFilePath))
             {
                 if (!uniqueImageFiles.Contains<string>(String.Format("stars/{0}", Path.GetFileName(imageFile))))
                 {
                     Console.WriteLine(String.Format("Removing unused image file {0}", imageFile));
                     // IO Exception when file is in use?
-                    File.Delete(Path.Combine(imageFilePath, imageFile));
+                    try
+                    {
+                        File.Delete(Path.Combine(imageFilePath, imageFile));
+                    }
+                    catch (IOException e)
+                    {
+                        Console.WriteLine("Failed to delete file: was in use");
+                    }
                 }
             }
         }
