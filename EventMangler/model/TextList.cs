@@ -10,8 +10,8 @@ using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 
 namespace EventMangler.model
-{    
-    class TextList
+{
+    class TextList : FTLTextComposite
     {        
         /// <summary>
         /// Name of this textList
@@ -28,18 +28,18 @@ namespace EventMangler.model
         /// <summary>
         /// The actual, no-shit texts contained in this textList
         /// </summary>
-        private ObservableCollection<string> texts;
-        public ObservableCollection<string> Texts { get { return texts; } }
+        private ObservableCollection<FTLText> texts;
+        public ObservableCollection<FTLText> Texts { get { return texts; } }
 
         public TextList(string eventFile, XElement listXML)
         {
             // Set fields
             this.eventFile = eventFile;
             this.name = listXML.Attribute("name").Value;
-            this.texts = new ObservableCollection<string>();
+            this.texts = new ObservableCollection<FTLText>();
 
             // Add text strings to texts
-            foreach (XElement text in listXML.Elements("test")) this.texts.Add(text.Value);            
+            foreach (XElement text in listXML.Elements("test")) this.texts.Add(new FTLText(text));            
 
             // Set collection behavior
             texts.CollectionChanged += HandleChange;
@@ -84,6 +84,13 @@ namespace EventMangler.model
                     File.WriteAllText(eventFile, xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml));
                 }
             }
+        }
+
+        public override XElement toXElement()
+        {
+            XElement ret = new XElement("textList", new XAttribute("name", name));
+            foreach (FTLText text in Texts) ret.Add(text.toXElement());
+            return ret;
         }
     }
 }

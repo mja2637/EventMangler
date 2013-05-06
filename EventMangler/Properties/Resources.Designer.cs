@@ -70,6 +70,15 @@ namespace EventMangler.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to true.
+        /// </summary>
+        internal static string debug {
+            get {
+                return ResourceManager.GetString("debug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to D:/Program Files (x86)/Steam/steamapps/common/FTL Faster Than Light/mods/Sonata/data/events_imageList.xml.
         /// </summary>
         internal static string default_imagelist {

@@ -120,6 +120,9 @@
   <data name="data_root_dir" xml:space="preserve">
     <value>D:\Program Files (x86)\Steam\steamapps\common\FTL Faster Than Light\resources\dat.dat-unpacked</value>
   </data>
+  <data name="debug" xml:space="preserve">
+    <value>true</value>
+  </data>
   <data name="default_imagelist" xml:space="preserve">
     <value>D:/Program Files (x86)/Steam/steamapps/common/FTL Faster Than Light/mods/Sonata/data/events_imageList.xml</value>
     <comment>Path to the default events_imageList file to load</comment>

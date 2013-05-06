@@ -12,17 +12,27 @@ namespace EventMangler.model
     class ImageLibrary
     {
         private Dictionary<string, List<FTLImage>> imageLists;
+        public Dictionary<string, List<FTLImage>> ImageLists
+        {
+            get
+            {
+                return imageLists;
+            }
+        }
+
         private string eventFilePath;
+        public string EventFilePath
+        {
+            get
+            {
+                return eventFilePath;
+            }
+        }
 
         public ImageLibrary(string path)
         {
             imageLists = getImageLists(path);
             eventFilePath = path;
-        }
-
-        public Dictionary<string, List<FTLImage>> getImageLists()
-        {
-            return imageLists;
         }
 
         /// <summary>
@@ -110,6 +120,7 @@ namespace EventMangler.model
                 if (!uniqueImageFiles.Contains<string>(String.Format("stars/{0}", Path.GetFileName(imageFile))))
                 {
                     Console.WriteLine(String.Format("Removing unused image file {0}", imageFile));
+                    // IO Exception when file is in use?
                     File.Delete(Path.Combine(imageFilePath, imageFile));
                 }
             }
@@ -144,24 +155,6 @@ namespace EventMangler.model
             }
             foreach (string list in imageLists.Keys) Console.WriteLine(list);
             return imageLists;
-        }
-    }
-
-    public struct FTLImage
-    {
-        public readonly int w, h;
-        public readonly string path;
-
-        public FTLImage(string path, int w, int h)
-        {
-            this.path = path;
-            this.w = w;
-            this.h = h;
-        }
-
-        public XElement toXElement()
-        {
-            return new XElement("img", new XAttribute("w", w), new XAttribute("h", h), path);
         }
     }
 }

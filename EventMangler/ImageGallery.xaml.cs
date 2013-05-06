@@ -21,7 +21,7 @@ namespace EventMangler
         {
             InitializeComponent();
             this.imageLib = new ImageLibrary(Properties.Resources.default_imagelist);
-            foreach (var imageList in imageLib.getImageLists())
+            foreach (var imageList in imageLib.ImageLists)
             {
                 // Create label with name of imageList
                 Label imageListLabel = new Label();
