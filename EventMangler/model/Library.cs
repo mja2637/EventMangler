@@ -10,18 +10,18 @@ using System.Xml.Linq;
 
 namespace EventMangler.model
 {
-    class TextListLibrary
+    abstract class Library<T> where T : XMLable
     {
-        private Dictionary<string, List<TextList>> textLists;
-        public Dictionary<string, List<TextList>> TextLists
+        protected Dictionary<string, List<T>> lists;
+        public Dictionary<string, List<T>> Lists
         {
             get 
             { 
-                return textLists; 
+                return lists; 
             }
         }
 
-        private string eventFileDirectory;
+        protected string eventFileDirectory;
         public string EventFileDirectory
         {
             get
@@ -30,11 +30,11 @@ namespace EventMangler.model
             }
         }
 
-        public TextListLibrary(string path)
+        public Library(string path)
         {
             eventFileDirectory = path;
-            textLists = new Dictionary<string, List<TextList>>();
-            foreach (string eventFile in Directory.GetFiles(path, "*.xml")) updateTextLists(eventFile);
+            lists = new Dictionary<string, List<T>>();
+            foreach (string eventFile in Directory.GetFiles(path, "*.xml")) updateLists(eventFile);
         }
 
 
@@ -42,20 +42,20 @@ namespace EventMangler.model
         /// Add the passed TextList to the Library, and to the underlying events file
         /// </summary>
         /// <param name="eventFile"></param>
-        /// <param name="newTextList"></param>        
-        public void addTextList(string eventFile, TextList newTextList)
+        /// <param name="newList"></param>        
+        public void addList(string eventFile, T newList)
         {            
-            if (textLists[eventFile] != null)
+            if (lists[eventFile] != null)
             {
-                textLists[eventFile].Add(newTextList);
+                lists[eventFile].Add(newList);
             } else {
-                textLists.Add(eventFile, new List<TextList> { newTextList });
+                lists.Add(eventFile, new List<T> { newList });
             }
 
             // Add XElement for new TextList to end of corresponding textList in corresponding event file
-            if (Properties.Resources.debug == "true") Console.WriteLine(String.Format("Adding text list element {0}", newTextList.toXElement().ToString()));
+            if (Properties.Resources.debug == "true") Console.WriteLine(String.Format("Adding text list element {0}", newList.toXElement().ToString()));
             string xmlString = File.ReadAllText(eventFileDirectory);
-            File.WriteAllText(eventFileDirectory, xmlString += "\n" + newTextList.toXElement().ToString());
+            File.WriteAllText(eventFileDirectory, xmlString += "\n" + newList.toXElement().ToString());
         }
 
         /// <summary>
@@ -63,14 +63,14 @@ namespace EventMangler.model
         /// </summary>
         /// <param name="image"></param>
         /// <param name="imageList"></param>
-        public void removeTextList(string eventFilePath, TextList textList)
+        public void removeTextList(string eventFilePath, T list)
         {
             // Remove image from dictionary
-            textLists[eventFilePath].Remove(textList);
+            lists[eventFilePath].Remove(list);
 
             // Remove XElement for TextList from corresponding events file           
             string xmlString = File.ReadAllText(eventFilePath);
-            xmlString = xmlString.Remove(xmlString.IndexOf(textList.toXElement().ToString()), textList.toXElement().ToString().Length);
+            xmlString = xmlString.Remove(xmlString.IndexOf(list.toXElement().ToString()), list.toXElement().ToString().Length);
             File.WriteAllText(eventFilePath, xmlString);
         }
 
@@ -79,7 +79,7 @@ namespace EventMangler.model
         /// </summary>
         /// <param name="eventFilePath"></param>
         /// <returns></returns>
-        protected void updateTextLists(string eventFilePath)
+        protected void updateLists(string eventFilePath)
         {
             // Display the passed filepath
             if (Properties.Resources.debug == "true") Console.WriteLine(String.Format("Scanning {0} for textLists", eventFilePath));
@@ -93,18 +93,30 @@ namespace EventMangler.model
             xmlString = rComments.Replace(xmlString, "");
             XDocument eventFileDocument = XDocument.Parse(xmlString);
 
-            var textListQuery =
+            var listQuery =
                 from
                     tl in eventFileDocument.Descendants("textList")
                 select tl;
 
-            List<TextList> lists = new List<TextList>();
-            foreach (var textList in textListQuery)
-            {                
-                lists.Add(new TextList(eventFilePath, textList));
+            List<T> subLists = new List<T>();
+            foreach (var list in listQuery)
+            {
+                subLists.Add(listFromXML(eventFilePath, list));
             }
-            if (lists.Count > 0) Console.WriteLine(String.Format("{0} textLists loaded from {1}.", lists.Count, eventFilePath));
-            textLists.Add(eventFilePath, lists);
+            if (subLists.Count > 0) Console.WriteLine(String.Format("{0} lists loaded from {1}.", subLists.Count, eventFilePath));
+            lists.Add(eventFilePath, subLists);
+        }
+
+        abstract protected T listFromXML(string eventFilePath, XElement list);
+    }
+
+    class TextListLibrary : Library<TextList>
+    {
+        public TextListLibrary(string path) : base(path) { }
+
+        protected override TextList listFromXML(string eventFilePath, XElement list)
+        {
+            return new TextList(eventFilePath, list);
         }
     }
 }

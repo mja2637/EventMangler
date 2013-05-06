@@ -84,8 +84,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="model\Library.cs" />
     <Compile Include="model\Models.cs" />
-    <Compile Include="model\TextListLibrary.cs" />
     <Compile Include="TextListGallery.xaml.cs">
       <DependentUpon>TextListGallery.xaml</DependentUpon>
     </Compile>

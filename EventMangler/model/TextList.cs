@@ -86,7 +86,7 @@ namespace EventMangler.model
             }
         }
 
-        public override XElement toXElement()
+        public XElement toXElement()
         {
             XElement ret = new XElement("textList", new XAttribute("name", name));
             foreach (FTLText text in Texts) ret.Add(text.toXElement());

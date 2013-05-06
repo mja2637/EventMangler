@@ -24,7 +24,7 @@ namespace EventMangler
             System.Console.WriteLine("Loading files from " + Path.Combine(Properties.Resources.mod_root_dir, "data/"));
             this.library = new TextListLibrary(Path.Combine(Properties.Resources.mod_root_dir, "data/"));
 
-            foreach (List<TextList> eventFile in library.TextLists.Values)
+            foreach (List<TextList> eventFile in library.Lists.Values)
             {
                 foreach (TextList textList in eventFile)
                 {
