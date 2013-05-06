@@ -11,87 +11,19 @@ using System.Xml.Linq;
 
 namespace EventMangler.model
 {
-    class TextList : FTLTextComposite
-    {        
-        /// <summary>
-        /// Name of this textList
-        /// </summary>
-        private string name;
-        public string Name { get { return name; } }
+    class TextList : FTLList<FTLText>, FTLTextComposite
+    {
+        public TextList(string eventFile, XElement listXML) : base(eventFile, listXML)
+        { }
 
-        /// <summary>
-        /// XML file in which this textList is located
-        /// </summary>
-        private string eventFile;
-        public string EventFile { get { return eventFile; } }
-
-        /// <summary>
-        /// The actual, no-shit texts contained in this textList
-        /// </summary>
-        private ObservableCollection<FTLText> texts;
-        public ObservableCollection<FTLText> Texts { get { return texts; } }
-
-        public TextList(string eventFile, XElement listXML)
+        protected override ObservableCollection<FTLText> itemsFromListXElement(XElement listXML)
         {
-            // Set fields
-            this.eventFile = eventFile;
-            this.name = listXML.Attribute("name").Value;
-            this.texts = new ObservableCollection<FTLText>();
-
-            // Add text strings to texts
-            foreach (XElement text in listXML.Elements("text"))
+            ObservableCollection<FTLText> textItems = new ObservableCollection<FTLText>();
+            foreach (XElement item in listXML.Elements())
             {
-                this.texts.Add(new FTLText(text));
+                textItems.Add(new FTLText(item));
             }
-
-            // Set collection behavior
-            texts.CollectionChanged += HandleChange;
+            return textItems;
         }
-
-        private void HandleChange(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            string xmlString = File.ReadAllText(eventFile);
-            if (e.Action == NotifyCollectionChangedAction.Add)
-            {                
-                string newXml = "";
-                foreach (var x in e.NewItems)
-                {
-                    newXml += ((FTLText) x).toXElement().ToString();
-                }
-                xmlString = xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml);
-            }
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-            {                
-                foreach (var x in e.OldItems)
-                {
-                    xmlString.Remove(xmlString.IndexOf(((FTLText) x).toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t<text>{0}</text>\n", x).Length);
-                }                
-            }
-            else if (e.Action == NotifyCollectionChangedAction.Replace)
-            {
-                foreach (var y in e.OldItems)
-                {
-                    foreach (var x in e.OldItems)
-                    {
-                        xmlString.Remove(xmlString.IndexOf(((FTLText)x).toXElement().ToString(), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t<text>{0}</text>\n", x).Length);
-                    }                    
-
-                    string newXml = "";
-                    foreach (var x in e.NewItems)
-                    {
-                        newXml += ((FTLText)x).toXElement().ToString();
-                    }
-                    xmlString = xmlString.Insert(xmlString.IndexOf("</textList>", xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), newXml);
-                }
-            }
-            File.WriteAllText(eventFile, xmlString);
-        }
-
-        public XElement toXElement()
-        {
-            XElement ret = new XElement("textList", new XAttribute("name", name));
-            foreach (FTLText text in Texts) ret.Add(text.toXElement());
-            return ret;
-        }
-    }
+    } 
 }

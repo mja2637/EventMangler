@@ -53,7 +53,7 @@ namespace EventMangler.model
         {
             // Identify correct imageList in dictionary            
             // Add image to list
-            getImageListByName(imageList).Images.Add(newImage);
+            getImageListByName(imageList).Items.Add(newImage);
         }
 
         private ImageList getImageListByName(string imageListName)
@@ -74,7 +74,7 @@ namespace EventMangler.model
         public void removeFTLImage(FTLImage image, string imageList)
         {
             // Remove image from dictionary
-            getImageListByName(imageList).Images.Remove(image);
+            getImageListByName(imageList).Items.Remove(image);
 
             removeUnusedImages();
         }
@@ -85,7 +85,7 @@ namespace EventMangler.model
             HashSet<string> uniqueImageFiles;
             var uniqueImages =
                 from imagelist in Lists.Values.SelectMany(x => x)
-                from image in imagelist.Images
+                from image in imagelist.Items
                 select image.path;
             uniqueImageFiles = new HashSet<string>(uniqueImages.Distinct<string>());
 

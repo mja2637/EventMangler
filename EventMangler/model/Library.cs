@@ -42,7 +42,7 @@ namespace EventMangler.model
         /// Add the passed TextList to the Library, and to the underlying events file
         /// </summary>
         /// <param name="eventFile"></param>
-        /// <param name="newList"></param>        
+        /// <param name="newList"></param>
         public void addList(string eventFile, T newList)
         {            
             if (lists[eventFile] != null)

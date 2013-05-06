@@ -89,7 +89,7 @@ namespace EventMangler
                 ImageListStack.Children.Add(listPanel);
 
                 // Add listed images to the horizontal stack
-                foreach (FTLImage image in imageList.Images)
+                foreach (FTLImage image in imageList.Items)
                 {
                     Border border = getBorderedImage(image);
 
