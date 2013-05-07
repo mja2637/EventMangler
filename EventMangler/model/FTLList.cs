@@ -16,40 +16,37 @@ namespace EventMangler.model
         /// <summary>
         /// Name of this FTLList
         /// </summary>
-        protected string name;
-        public string Name { get { return name; } }
+        public string Name { get; protected set; }
 
         /// <summary>
         /// XML file in which this FTLList is located
         /// </summary>
-        protected string eventFile;
-        public string EventFile { get { return eventFile; } }
+        public string EventFile { get; protected set; }
 
-        protected string tag;
+        public string Tag { get; protected set; }
 
         /// <summary>
         /// The actual, no-shit content contained in this FTLList
         /// </summary>
-        protected ObservableCollection<T> texts;
-        public ObservableCollection<T> Items { get { return texts; } }
+        public ObservableCollection<T> Items { get; protected set; }
 
         public FTLList(string eventFile, XElement listXML)
         {
             // Set fields
-            this.eventFile = eventFile;
-            this.name = listXML.Attribute("name").Value;
-            this.tag = listXML.Name.ToString();
-            this.texts = itemsFromListXElement(listXML);
+            EventFile = eventFile;
+            Name = listXML.Attribute("name").Value;
+            Tag = listXML.Name.ToString();
+            Items = itemsFromListXElement(listXML);
             
             // Set collection behavior
-            texts.CollectionChanged += HandleChange;
+            Items.CollectionChanged += HandleChange;
         }
 
         abstract protected ObservableCollection<T> itemsFromListXElement(XElement listXML);
 
         private void HandleChange(object sender, NotifyCollectionChangedEventArgs e)
         {
-            string xmlString = File.ReadAllText(eventFile);
+            string xmlString = File.ReadAllText(EventFile);
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
                 insert(e.NewItems.Cast<T>(), ref xmlString);
@@ -63,7 +60,7 @@ namespace EventMangler.model
                 remove(e.OldItems.Cast<T>(), ref xmlString);
                 insert(e.NewItems.Cast<T>(), ref xmlString);
             }
-            File.WriteAllText(eventFile, xmlString);
+            File.WriteAllText(EventFile, xmlString);
         }
 
         private void insert(IEnumerable<T> newItems, ref string xmlString)
@@ -73,7 +70,7 @@ namespace EventMangler.model
             {
                 newXml += ((T)x).toXElement().ToString();
             }
-            xmlString = xmlString.Insert(xmlString.IndexOf(String.Format("</{0}>", tag), xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), String.Format("\t{0}\n", newXml));
+            xmlString = xmlString.Insert(xmlString.IndexOf(String.Format("</{0}>", Tag), xmlString.IndexOf(String.Format("name=\"{0}\">", Name))), String.Format("\t{0}\n", newXml));
         }
 
         private void remove(IEnumerable<T> oldItems, ref string xmlString)
@@ -81,13 +78,13 @@ namespace EventMangler.model
             foreach (var x in oldItems)
             {
                 string remTag = ((T)x).toXElement().ToString();
-                xmlString = xmlString.Remove(xmlString.IndexOf(remTag, xmlString.IndexOf(String.Format("name=\"{0}\">", this.name))), remTag.Length);
+                xmlString = xmlString.Remove(xmlString.IndexOf(remTag, xmlString.IndexOf(String.Format("name=\"{0}\">", Name))), remTag.Length);
             }
         }
 
         public XElement toXElement()
         {
-            XElement ret = new XElement(tag, new XAttribute("name", name));
+            XElement ret = new XElement(Tag, new XAttribute("name", Name));
             foreach (T item in Items) ret.Add(item.toXElement());
             return ret;
         }

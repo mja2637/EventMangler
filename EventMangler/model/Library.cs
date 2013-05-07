@@ -11,29 +11,15 @@ using System.Xml.Linq;
 namespace EventMangler.model
 {
     abstract class Library<T> where T : XMLable
-    {
-        protected Dictionary<string, List<T>> lists;
-        public Dictionary<string, List<T>> Lists
-        {
-            get 
-            { 
-                return lists; 
-            }
-        }
+    {        
+        public Dictionary<string, List<T>> Lists { get; protected set; }
 
-        protected string eventFileDirectory;
-        public string EventFileDirectory
-        {
-            get
-            {
-                return eventFileDirectory;
-            }
-        }
+        public string EventFileDirectory { get; protected set; }
 
         public Library(string path, string listTag)
         {
-            eventFileDirectory = path;
-            lists = new Dictionary<string, List<T>>();
+            EventFileDirectory = path;
+            Lists = new Dictionary<string, List<T>>();
             foreach (string eventFile in Directory.GetFiles(path, "*.xml")) updateLists(eventFile, listTag);
         }
 
@@ -45,17 +31,17 @@ namespace EventMangler.model
         /// <param name="newList"></param>
         public void addList(string eventFile, T newList)
         {            
-            if (lists[eventFile] != null)
+            if (Lists[eventFile] != null)
             {
-                lists[eventFile].Add(newList);
+                Lists[eventFile].Add(newList);
             } else {
-                lists.Add(eventFile, new List<T> { newList });
+                Lists.Add(eventFile, new List<T> { newList });
             }
 
             // Add XElement for new TextList to end of corresponding textList in corresponding event file
             if (Properties.Resources.debug == "true") Console.WriteLine(String.Format("Adding text list element {0}", newList.toXElement().ToString()));
-            string xmlString = File.ReadAllText(eventFileDirectory);
-            File.WriteAllText(eventFileDirectory, String.Format("{0}\n{1}", xmlString, newList.toXElement().ToString()));
+            string xmlString = File.ReadAllText(EventFileDirectory);
+            File.WriteAllText(EventFileDirectory, String.Format("{0}\n{1}", xmlString, newList.toXElement().ToString()));
         }
 
         /// <summary>
@@ -66,7 +52,7 @@ namespace EventMangler.model
         public void removeTextList(string eventFilePath, T list)
         {
             // Remove image from dictionary
-            lists[eventFilePath].Remove(list);
+            Lists[eventFilePath].Remove(list);
 
             // Remove XElement for TextList from corresponding events file           
             string xmlString = File.ReadAllText(eventFilePath);
@@ -79,7 +65,7 @@ namespace EventMangler.model
         /// </summary>
         /// <param name="eventFilePath"></param>
         /// <returns></returns>
-        protected void updateLists(string eventFilePath, string listTag)
+        protected internal void updateLists(string eventFilePath, string listTag)
         {
             // Display the passed filepath
             if (Properties.Resources.debug == "true") Console.WriteLine(String.Format("Scanning {0} for lists", eventFilePath));
@@ -106,18 +92,18 @@ namespace EventMangler.model
             if (subLists.Count > 0)
             {
                 Console.WriteLine(String.Format("{0} lists loaded from {1}.", subLists.Count, eventFilePath));
-                lists.Add(eventFilePath, subLists);
+                Lists.Add(eventFilePath, subLists);
             }            
         }
 
-        abstract protected T listFromXML(string eventFilePath, XElement list);
+        abstract protected internal T listFromXML(string eventFilePath, XElement list);
     }
 
     class TextListLibrary : Library<TextList>
     {
         public TextListLibrary(string path) : base(path, "textList") { }
 
-        protected override TextList listFromXML(string eventFilePath, XElement list)
+        override protected internal TextList listFromXML(string eventFilePath, XElement list)
         {
             return new TextList(eventFilePath, list);
         }

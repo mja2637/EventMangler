@@ -56,7 +56,7 @@ namespace EventMangler.model
             getImageListByName(imageList).Items.Add(newImage);
         }
 
-        private ImageList getImageListByName(string imageListName)
+        internal ImageList getImageListByName(string imageListName)
         {
             foreach (List<ImageList> imageLists in Lists.Values)
             {
@@ -103,13 +103,13 @@ namespace EventMangler.model
                     }
                     catch (IOException e)
                     {
-                        Console.WriteLine("Failed to delete file: was in use");
+                        Console.WriteLine("Failed to delete file: was in use", e);
                     }
                 }
             }
         }
 
-        protected Dictionary<string, List<FTLImage>> getImageLists(string eventFilePath)
+        internal Dictionary<string, List<FTLImage>> getImageLists(string eventFilePath)
         {
             // Display the passed filepath
             System.Console.WriteLine("Loading imageLists from " + eventFilePath);
@@ -140,7 +140,7 @@ namespace EventMangler.model
             return imageLists;
         }
 
-        protected override ImageList listFromXML(string eventFilePath, XElement list)
+        override protected internal ImageList listFromXML(string eventFilePath, XElement list)
         {
             return new ImageList(eventFilePath, list);
         }
