@@ -76,10 +76,11 @@ namespace EventMangler.model
             // Remove image from dictionary
             getImageListByName(imageList).Items.Remove(image);
 
-            removeUnusedImages();
+            // Remove any image files which may have been orphaned
+            //removeOrphanedFiles();
         }
 
-        public void removeUnusedImages()
+        public void removeOrphanedFiles()
         {
             // Query our imageLists dictionary for all unique image paths
             HashSet<string> uniqueImageFiles;
@@ -109,7 +110,7 @@ namespace EventMangler.model
             }
         }
 
-        internal Dictionary<string, List<FTLImage>> getImageLists(string eventFilePath)
+        internal Dictionary<string, List<FTLImage>> loadImageLists(string eventFilePath)
         {
             // Display the passed filepath
             System.Console.WriteLine("Loading imageLists from " + eventFilePath);

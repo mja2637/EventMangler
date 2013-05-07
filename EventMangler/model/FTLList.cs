@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
@@ -77,8 +78,11 @@ namespace EventMangler.model
         {
             foreach (var x in oldItems)
             {
-                string remTag = ((T)x).toXElement().ToString();
-                xmlString = xmlString.Remove(xmlString.IndexOf(remTag, xmlString.IndexOf(String.Format("name=\"{0}\">", Name))), remTag.Length);
+                string itemTag = ((T)x).toXElement().ToString();
+                Regex tTagRegex = new Regex(@"[\n|\s|\t]*" + itemTag + "[\t| ]*");
+                xmlString = tTagRegex.Replace(xmlString, String.Empty);
+                // Preserved for posterity
+                //xmlString = xmlString.Remove(xmlString.IndexOf(remTag, xmlString.IndexOf(String.Format("name=\"{0}\">", Name))), remTag.Length);
             }
         }
 

@@ -27,36 +27,41 @@ namespace EventMangler.model
         /// <summary>
         /// Add the passed TextList to the Library, and to the underlying events file
         /// </summary>
-        /// <param name="eventFile"></param>
+        /// <param name="eventFilePath"></param>
         /// <param name="newList"></param>
-        public void addList(string eventFile, T newList)
+        public void addList(string eventFilePath, T newList)
         {            
-            if (Lists[eventFile] != null)
+            if (Lists[eventFilePath] != null)
             {
-                Lists[eventFile].Add(newList);
+                Lists[eventFilePath].Add(newList);
             } else {
-                Lists.Add(eventFile, new List<T> { newList });
+                Lists[eventFilePath] = new List<T> { newList };
             }
 
             // Add XElement for new TextList to end of corresponding textList in corresponding event file
             if (Properties.Resources.debug == "true") Console.WriteLine(String.Format("Adding text list element {0}", newList.toXElement().ToString()));
-            string xmlString = File.ReadAllText(EventFileDirectory);
-            File.WriteAllText(EventFileDirectory, String.Format("{0}\n{1}", xmlString, newList.toXElement().ToString()));
+            string xmlString = File.ReadAllText(eventFilePath);
+            File.WriteAllText(EventFileDirectory, new StringBuilder().Append(xmlString).Append('\n').Append(newList.toXElement()).ToString());
         }
 
         /// <summary>
-        /// Remove the passed TextList from theLibrary, and from the underlying events file
+        /// Remove the passed TextList from the Library, and from the underlying events file
         /// </summary>
         /// <param name="image"></param>
         /// <param name="imageList"></param>
         public void removeTextList(string eventFilePath, T list)
         {
-            // Remove image from dictionary
-            Lists[eventFilePath].Remove(list);
+            if (Lists[eventFilePath] != null && Lists[eventFilePath].Contains(list))
+            {
+                // Remove image from dictionary
+                Lists[eventFilePath].Remove(list);
+            }
 
             // Remove XElement for TextList from corresponding events file           
             string xmlString = File.ReadAllText(eventFilePath);
-            xmlString = xmlString.Remove(xmlString.IndexOf(list.toXElement().ToString()), list.toXElement().ToString().Length);
+            Regex listTagRegex = new Regex(@"[\n| ]*" + list.toXElement() + "[\n| ]*");
+            xmlString = listTagRegex.Replace(File.ReadAllText(eventFilePath), String.Empty);
+            //xmlString = xmlString.Remove(xmlString.IndexOf(list.toXElement().ToString()), list.toXElement().ToString().Length);
             File.WriteAllText(eventFilePath, xmlString);
         }
 
@@ -72,8 +77,7 @@ namespace EventMangler.model
             string xmlString = File.ReadAllText(eventFilePath);
 
             // We have to artificially add a root node because fuckass
-            // We have to artificially add a root node
-            xmlString = String.Format("<lists>{0}</lists>", xmlString);
+            xmlString = new StringBuilder().Append("<lists>").Append(xmlString).Append("</lists>").ToString();
             // Also, remove all comments (since some contain invalid characters)
             Regex rComments = new Regex("<!--.*?-->", RegexOptions.Singleline);
             xmlString = rComments.Replace(xmlString, "");
